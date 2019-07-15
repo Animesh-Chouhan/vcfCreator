@@ -1,7 +1,6 @@
 # vcfCreator
 
 ![license][license]
-![](https://img.shields.io/badge/node-v8.10.0-orange.svg)
 ![](https://img.shields.io/pypi/pyversions/Django.svg)
 ![](https://img.shields.io/badge/platforms-linux--64-lightgrey.svg)
 
