@@ -22,13 +22,6 @@ sudo apt-get install python3
 sudo apt-get install nodejs
 sudo apt-get install npm
 
-#install dependencies
-npm install express --save
-npm install puppeteer --save
-
-#run the api on localhost
-node scraper_api.js 
-
 #testing the python scraper
 python3 scraper.py ./to_scrape_sample.txt
 
@@ -57,8 +50,7 @@ _For more examples and usage, please refer to the [Wiki][wiki]._
 
 ## Built With
 
-* [Puppeteer](https://developers.google.com/web/tools/puppeteer/) - Headless browser to overcome pagination
-* [ytcomments](https://github.com/philbot9/youtube-comment-scraper) - Comment API
+
 
 
 
