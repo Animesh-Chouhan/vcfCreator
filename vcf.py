@@ -1,4 +1,5 @@
 import csv
+import logging
 import os.path
 
 def ask_user():
@@ -41,7 +42,7 @@ def vcfcreator(filename):                                   #main function
             for row in reader:
                 data.append(row)
 
-        print(data[0])
+        logging.info(data[0])
         index = {}
 
         attributes = {'FN': 'name',
@@ -61,7 +62,7 @@ def vcfcreator(filename):                                   #main function
                 for attribute in attributes.keys():
                     if attributes[attribute] in data[0]:
                         index[attribute] = data[0].index(attributes[attribute])
-            print(index)
+            logging.info(index)
 
             for i, row in enumerate(data[1:]):
                 for attribute in attributes.keys():
@@ -76,5 +77,13 @@ def vcfcreator(filename):                                   #main function
             print("Raise an issue with the details and the vcf file created")
             
 
-	
-vcfcreator("sample.csv")
+if __name__ == "__main__":
+    print("""
+  _    ______________   ______                __            
+ | |  / / ____/ ____/  / ____/_______  ____ _/ /_____  _____
+ | | / / /   / /_     / /   / ___/ _ \/ __ `/ __/ __ \/ ___/
+ | |/ / /___/ __/    / /___/ /  /  __/ /_/ / /_/ /_/ / /    
+ |___/\____/_/       \____/_/   \___/\__,_/\__/\____/_/     
+                                                            
+    """)
+    vcfcreator("sample.csv")
