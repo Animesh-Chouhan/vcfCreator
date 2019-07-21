@@ -1,3 +1,4 @@
+import sys
 import csv
 import logging
 import os.path
@@ -30,7 +31,7 @@ def encode(text):
 def name_formatter(name):
     return name
 
-def vcfcreator(filename):                                   #main function
+def vcfcreator(filename="sample.csv"):                                   #main function
     if not os.path.isfile(filename):                        #checking if the file exists
         print("File doesn't exist. :(")
         return 0
@@ -83,7 +84,11 @@ if __name__ == "__main__":
  | |  / / ____/ ____/  / ____/_______  ____ _/ /_____  _____
  | | / / /   / /_     / /   / ___/ _ \/ __ `/ __/ __ \/ ___/
  | |/ / /___/ __/    / /___/ /  /  __/ /_/ / /_/ /_/ / /    
- |___/\____/_/       \____/_/   \___/\__,_/\__/\____/_/     
-                                                            
+ |___/\____/_/       \____/_/   \___/\__,_/\__/\____/_/                                                             
     """)
-    vcfcreator("sample.csv")
+    try:
+        vcfcreator(sys.argv[1])
+    except(IndexError):
+        print("No file provided. Running the sample csv!")
+        vcfcreator()
+        
