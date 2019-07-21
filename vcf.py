@@ -2,11 +2,15 @@ import sys
 import csv
 import logging
 import os.path
+from prettytable import PrettyTable
 
-def ask_user():
-    print(f"-- Is this the field containing the name?")
-    print(f"-- and this the field containing the room number?")
-    print(f"-- and this the field containing the phone number?")
+def ask_user(header):
+    print("Is this the field containing the name?")
+    table = PrettyTable(header)
+    # table.add_row(['Alice', 24])
+    # table.add_row(['Bob', 19])
+    print(table)
+
     check = str(input("Reply in (Y/N): ")).lower().strip()
     try:
         if check[0] == 'y':
@@ -37,7 +41,7 @@ def vcfcreator(filename="sample.csv"):                                   #main f
         return 0
     else:
         data = []
-        print("File found. :)\nProcessing...")
+        print("File found. Processing...")
         with open(filename, 'r') as csvfile:             #loading the file               
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
@@ -72,7 +76,7 @@ def vcfcreator(filename="sample.csv"):                                   #main f
 
             file.write("END:VCARD\n")
         
-        if(ask_user() == True):
+        if(ask_user(data[0]) == True):
             print("Write Successful. Thanks for using :)")
         else:
             print("Raise an issue with the details and the vcf file created")
