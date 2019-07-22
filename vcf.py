@@ -32,17 +32,18 @@ def encode(text):
     return encoded
 #print(encode("this is one value,this \is another"))
 
-def name_formatter(name):
-    return name
+def name_formatter(data, index, formatter):
+    formatted = data[index['FN']] + " " + data[formatter['roomno']] + " " + data[formatter['company']]
+    return formatted
 
-def vcfcreator(filename="sample.csv"):                                   #main function
+def vcfcreator(filename="sample.csv"):                      #main function
     if not os.path.isfile(filename):                        #checking if the file exists
         print("File doesn't exist. :(")
         return 0
     else:
         data = []
         print("File found. Processing...")
-        with open(filename, 'r') as csvfile:             #loading the file               
+        with open(filename, 'r') as csvfile:                #loading the file               
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
                 data.append(row)
@@ -59,19 +60,34 @@ def vcfcreator(filename="sample.csv"):                                   #main f
                     'EMAIL': 'email'
                     }
 
-        with open("sample.vcf", "w+") as file:
-            for row in data[1:]:
-                for attribute in attributes.keys():
-                    if attributes[attribute] in data[0]:
-                        index[attribute] = data[0].index(attributes[attribute])
+        with open(filename.split(".")[0]+".vcf", "w+") as file:
+            for attribute in attributes.keys():
+                if attributes[attribute] in data[0]:
+                    index[attribute] = data[0].index(attributes[attribute])
             logging.info(index)
+            print(index)
+            
+            #formatter attributes
+            formatter = {}
+            for key in data[0]:
+                splitted_key = key.split("_")
+                try:
+                    if splitted_key[0] == "name" and splitted_key[1]:
+                        formatter[splitted_key[1]] = data[0].index(key)
+                except: 
+                    pass
+            print(formatter)
 
+            #vcard writer
             for i, row in enumerate(data[1:]):
                 file.write("BEGIN:VCARD\n")
                 file.write("VERSION:4.0\n")
                 for attribute in attributes.keys():
                     if attributes[attribute] in data[0]:
-                        file.write("{}:{}\n".format(attribute, data[i+1][index[attribute]]))
+                        if attributes[attribute] == 'name':
+                            file.write("{}:{}\n".format(attribute, name_formatter(data[i+1], index, formatter)))
+                        else:
+                            file.write("{}:{}\n".format(attribute, data[i+1][index[attribute]]))
                 file.write("END:VCARD\n")
         
         if(ask_user(data[0]) == True):
