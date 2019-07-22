@@ -54,15 +54,12 @@ def vcfcreator(filename="sample.csv"):                                   #main f
                     'NICKNAME': 'nick',
                     'BDAY': 'birthday',
                     'ANNIVERSARY': 'anniversary',
-                    'TEL': 'phone',
-                    'ADR': 'address',
+                    'TEL;WORK;VOICE': 'phone',
+                    'ADR;HOME': 'address',
                     'EMAIL': 'email'
                     }
 
-        with open("contacts.vcf", "w+") as file:
-            file.write("BEGIN:VCARD\n")
-            file.write("VERSION:4.0\n")
-
+        with open("sample.vcf", "w+") as file:
             for row in data[1:]:
                 for attribute in attributes.keys():
                     if attributes[attribute] in data[0]:
@@ -70,11 +67,12 @@ def vcfcreator(filename="sample.csv"):                                   #main f
             logging.info(index)
 
             for i, row in enumerate(data[1:]):
+                file.write("BEGIN:VCARD\n")
+                file.write("VERSION:4.0\n")
                 for attribute in attributes.keys():
                     if attributes[attribute] in data[0]:
                         file.write("{}:{}\n".format(attribute, data[i+1][index[attribute]]))
-
-            file.write("END:VCARD\n")
+                file.write("END:VCARD\n")
         
         if(ask_user(data[0]) == True):
             print("Write Successful. Thanks for using :)")
