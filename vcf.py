@@ -4,13 +4,8 @@ import logging
 import os.path
 from prettytable import PrettyTable
 
-def ask_user(header):
-    print("Is this the field containing the name?")
-    table = PrettyTable(header)
-    # table.add_row(['Alice', 24])
-    # table.add_row(['Bob', 19])
-    print(table)
-
+def ask_user(to_print):
+    print(to_print)
     check = str(input("Reply in (Y/N): ")).lower().strip()
     try:
         if check[0] == 'y':
@@ -25,6 +20,8 @@ def ask_user(header):
         print(error)
         return ask_user()
 
+
+
 def encode(text):
     #char to encode "\\" / "\," / "\n"(Backslashes, commas, and newlines must be encoded)
     encoded = text.replace('\\', '\\\\')
@@ -32,9 +29,26 @@ def encode(text):
     return encoded
 #print(encode("this is one value,this \is another"))
 
-def name_formatter(data, index, formatter):
-    formatted = data[index['FN']] + " " + data[formatter['roomno']] + " " + data[formatter['company']]
+def name_formatter(data, index, formatter, former):
+    formatted = ""
+    for form in former:
+        if form in index.keys(): 
+            formatted += data[index[form]] + " " 
+        if form in formatter.keys():
+            formatted += data[formatter[form]] + " " 
     return formatted
+
+def check_format(data, index, formatter):
+    inp = input("\nPlease specify the format for the names:\nE.g. name + roomno + company if the fields in csv file are name, name_roomno, name_company\n")
+    former = inp.replace(" ", "").split("+")
+    try:
+        print("\n")
+        print(name_formatter(data, index, formatter, former))
+    except Exception as e:
+        print("ERROR: " + str(e))
+    if(not ask_user("Is this formatting fine?")):
+        check_format(data, index, formatter)
+    return former
 
 def vcfcreator(filename="sample.csv"):                      #main function
     if not os.path.isfile(filename):                        #checking if the file exists
@@ -47,10 +61,16 @@ def vcfcreator(filename="sample.csv"):                      #main function
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
                 data.append(row)
+        
+        table = PrettyTable(data[0])
+        try:
+            table.add_row(data[1])
+        except:
+            print("The csv file doesn't seem to have any data")
+        print(table, "\n")
 
         logging.info(data[0])
-        index = {}
-
+        
         attributes = {'FN': 'name',
                     'NICKNAME': 'nick',
                     'BDAY': 'birthday',
@@ -61,13 +81,12 @@ def vcfcreator(filename="sample.csv"):                      #main function
                     }
 
         with open(filename.split(".")[0]+".vcf", "w+") as file:
-            for attribute in attributes.keys():
-                if attributes[attribute] in data[0]:
-                    index[attribute] = data[0].index(attributes[attribute])
+            index = {}
+            for i, column in enumerate(data[0]):
+                    index[column] = i
             logging.info(index)
-            print(index)
             
-            #formatter attributes
+            # formatter attributes
             formatter = {}
             for key in data[0]:
                 splitted_key = key.split("_")
@@ -76,7 +95,7 @@ def vcfcreator(filename="sample.csv"):                      #main function
                         formatter[splitted_key[1]] = data[0].index(key)
                 except: 
                     pass
-            print(formatter)
+            former = check_format(data[1], index, formatter)
 
             #vcard writer
             for i, row in enumerate(data[1:]):
@@ -84,14 +103,14 @@ def vcfcreator(filename="sample.csv"):                      #main function
                 file.write("VERSION:4.0\n")
                 for attribute in attributes.keys():
                     if attributes[attribute] in data[0]:
-                        if attributes[attribute] == 'name':
-                            file.write("{}:{}\n".format(attribute, name_formatter(data[i+1], index, formatter)))
+                        if attributes[attribute] == 'name' and formatter:
+                            file.write("{}:{}\n".format(attribute, encode(name_formatter(data[i+1], index, formatter, former))))
                         else:
-                            file.write("{}:{}\n".format(attribute, data[i+1][index[attribute]]))
+                            file.write("{}:{}\n".format(attribute, encode(data[i+1][index[attributes[attribute]]])))
                 file.write("END:VCARD\n")
         
-        if(ask_user(data[0]) == True):
-            print("Write Successful. Thanks for using :)")
+        if(ask_user(("Check the contacts imported with the {} file".format(filename.split(".")[0]+".vcf"))) == True):
+            print("Thanks for using :)")
         else:
             print("Raise an issue with the details and the vcf file created")
             
